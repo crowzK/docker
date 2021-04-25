@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+
+  stm32mp1:
+    privileged: true
+    image: stm32mp1dev
+    restart: always
+    volumes:
+      - develop:/home/craven/develop
+    stdin_open: true
+    tty: true
+
+volumes:
+  develop:
