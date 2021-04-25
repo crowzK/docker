@@ -1,6 +1,12 @@
-FROM ubuntu:20.04
+FROM ssh
 
-RUN apt update && apt install  openssh-server sudo -y
+RUN apt update
+
+# for debconf: unable to initialize frontend: Dialog
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+# stm32mp1 yocto build env download 
+# see https://wiki.st.com/stm32mpu/wiki/STM32MP1_Distribution_Package
 
 RUN apt install gawk wget git-core diffstat unzip texinfo gcc-multilib build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev pylint3 pylint xterm -y
 
@@ -12,20 +18,12 @@ RUN apt install libncurses5 libncurses5-dev libncursesw5-dev libssl-dev linux-he
 
 RUN apt install coreutils bsdmainutils sed curl bc lrzsz corkscrew cvs subversion mercurial nfs-common nfs-kernel-server libarchive-zip-perl dos2unix texi2html diffstat libxml2-utils -y
 
-RUN useradd -rm -d /home/craven -s /bin/bash -G sudo -U -u 1000 craven
+# install python
+RUN apt install python -y
 
-RUN  echo 'craven:1928' | chpasswd 
+# install `repo`
+RUN curl https://storage.googleapis.com/git-repo-downloads/repo > /bin/repo
+RUN chmod a+x /bin/repo
 
-RUN mkdir /home/craven/bin
-
-RUN curl https://storage.googleapis.com/git-repo-downloads/repo > /home/craven/bin/repo
-
-RUN chmod a+x /home/craven/bin/repo
-
-RUN apt install bash-completion
-
-RUN service ssh start
-
-EXPOSE 22
-
-CMD ["/usr/sbin/sshd","-D"]
+# install lub-usb
+RUN apt install libusb-1.0
